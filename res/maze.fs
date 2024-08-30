@@ -66,7 +66,7 @@ void main()
     vec4 randomValues = texture2D(tex_noise0, ruv);
     float randomValue = randomValues.x;
 
-    uv.x += ceil(randomValue * tiles.x) * rev_tiles.x;
+    //uv.x += ceil(randomValue * tiles.x) * rev_tiles.x;
 
     vec4 color = texture2D(texture0, fract(uv));
 
