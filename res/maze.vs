@@ -1,10 +1,12 @@
 #version 100
 
-attribute  vec3 vertexPosition;
-attribute  vec2 vertexTexCoord;
-attribute  vec3 vertexNormal;
-attribute  vec3 vertexTangent;
-attribute  vec4 vertexColor;
+precision lowp float;
+
+attribute vec3 vertexPosition;
+attribute vec2 vertexTexCoord;
+attribute vec3 vertexNormal;
+attribute vec3 vertexTangent;
+attribute vec4 vertexColor;
 
 uniform mat4 mvp;
 uniform mat4 matModel;
