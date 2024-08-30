@@ -231,10 +231,7 @@ static void update() {
   SaveProgress("hash", SAVES_HASH);
   SaveProgress("px", playerPosition.x);
   SaveProgress("py", playerPosition.y);
-
-	double t = 0;
-	float turn = playerTurn - modf((playerTurn / (PI * 0.5)), &t) * PI * 0.5f;
-  SaveProgress("turn", turn * 1e4);
+  SaveProgress("turn", playerTurn * 1e4);
 
   if (action_b == ACTION_SWAP) {
     swap_weapon();
@@ -475,6 +472,10 @@ static void init() {
     playerPosition.x = playerPosition.x ? playerPosition.x : 1;
     playerPosition.y = playerPosition.y ? playerPosition.y : 1;
     playerTurn = LoadProgress("turn") / 1e4;
+
+		// Align angle
+		double t = 0;
+		playerTurn = playerTurn - modf((playerTurn / (PI * 0.5)), &t) * PI * 0.5f;
   }
 
   init_weapon();
