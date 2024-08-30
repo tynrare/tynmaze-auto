@@ -135,7 +135,47 @@ static bool sui_screen_released = false;
 static ACTION action_a = ACTION_NONE;
 static ACTION action_b = ACTION_NONE;
 
+static float walker_dt = 0;
+static void walker() {
+	walker_dt += GetFrameTime();
+	if (walker_dt < 0.3) {
+		return;
+	}
+
+	walker_dt = 0;
+
+	float forwardx = roundf(playerPosition.x + sinf(playerTurn));
+	float forwardy = roundf(playerPosition.y + cosf(playerTurn));
+	int forward = mapPixels[(int)(forwardy)*cubicmap.width + (int)(forwardx)].r;
+
+	if (forward == 0) {
+		inputDirection.x = 1;
+		return;
+	}
+
+	float leftx = roundf(playerPosition.x + sinf(playerTurn + PI * 0.5f));
+	float lefty = roundf(playerPosition.y + cosf(playerTurn + PI * 0.5f));
+	int left = mapPixels[(int)(lefty)*cubicmap.width + (int)(leftx)].r;
+	if (left == 0) {
+		inputDirection.y = 1;
+		return;
+	}
+
+	float rightx = roundf(playerPosition.x + sinf(playerTurn - PI * 0.5f));
+	float righty = roundf(playerPosition.y + cosf(playerTurn - PI * 0.5f));
+	int right = mapPixels[(int)(righty)*cubicmap.width + (int)(rightx)].r;
+	if (right == 0) {
+		inputDirection.y = -1;
+		return;
+	}
+
+	// dead end
+	inputDirection.y = 1;
+}
+
 static void update() {
+	walker();
+
   if (inputDirection.x) {
     steps += 1;
   }
@@ -194,6 +234,7 @@ static void update() {
   (Rectangle) { viewport_w - 16 - 64, viewport_h - 16 - 64, 64, 64 }
 
 static void draw_inputs() {
+	return;
   Rectangle sba = SUI_BTN_A;
   Rectangle sbb = SUI_BTN_B;
   Rectangle sbc = SUI_BTN_C;
