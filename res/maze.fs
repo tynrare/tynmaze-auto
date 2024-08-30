@@ -57,8 +57,8 @@ void main()
 
     float gridscale = 1.0;
 		// 0.01 required for fixing glitching related with ceils hopping
-		(kinda z-fight)
-    vec3 fp = vec3(fragPosition.x + 0.51, fragPosition.y, fragPosition.z + 0.51) * gridscale;
+		// (kinda z-fight)
+    vec3 fp = vec3(fragPosition.x + 0.501, fragPosition.y, fragPosition.z + 0.501) * gridscale;
     vec3 fp_ceil = ceil(fp) / gridscale;
 
     // completely random texture

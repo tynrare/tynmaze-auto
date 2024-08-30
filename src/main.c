@@ -228,10 +228,13 @@ static void update() {
   camera.target.z = camera.position.z + cosf(cameraRot);
 
   SaveProgress("steps", steps);
+  SaveProgress("hash", SAVES_HASH);
   SaveProgress("px", playerPosition.x);
   SaveProgress("py", playerPosition.y);
-  SaveProgress("turn", playerTurn * 1e4);
-  SaveProgress("hash", SAVES_HASH);
+
+	double t = 0;
+	float turn = playerTurn - modf((playerTurn / (PI * 0.5)), &t) * PI * 0.5f;
+  SaveProgress("turn", turn * 1e4);
 
   if (action_b == ACTION_SWAP) {
     swap_weapon();
