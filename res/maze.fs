@@ -56,6 +56,8 @@ void main()
     }
 
     float gridscale = 1.0;
+		// 0.01 required for fixing glitching related with ceils hopping
+		(kinda z-fight)
     vec3 fp = vec3(fragPosition.x + 0.51, fragPosition.y, fragPosition.z + 0.51) * gridscale;
     vec3 fp_ceil = ceil(fp) / gridscale;
 
@@ -70,6 +72,6 @@ void main()
 
     vec4 color = texture2D(texture0, fract(uv));
 
-    gl_FragColor = vec4(randomValues.rgb, 1.0);
+    gl_FragColor = vec4(color.rgb, 1.0);
 }
 
