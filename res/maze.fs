@@ -21,7 +21,7 @@ float rand(vec3 co) {
 
 void main()
 {
-		vec2 tiles = vec2(45.0, 4.0);
+		vec2 tiles = vec2(32.0, 4.0);
 		vec2 rev_tiles = 1.0 / tiles;
 	
     bool top = fragNormal.y < 0.0;
