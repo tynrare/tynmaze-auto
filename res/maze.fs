@@ -70,6 +70,6 @@ void main()
 
     vec4 color = texture2D(texture0, fract(uv));
 
-    gl_FragColor = vec4(color.rgb, 1.0);
+    gl_FragColor = vec4(randomValues.rgb, 1.0);
 }
 
