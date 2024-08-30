@@ -144,20 +144,20 @@ static void walker() {
 
 	walker_dt = 0;
 
+	float leftx = roundf(playerPosition.x + sinf(playerTurn + PI * 0.5f));
+	float lefty = roundf(playerPosition.y + cosf(playerTurn + PI * 0.5f));
+	int left = mapPixels[(int)(lefty)*cubicmap.width + (int)(leftx)].r;
+	if (left == 0) {
+		inputDirection.y = 1;
+		return;
+	}
+
 	float forwardx = roundf(playerPosition.x + sinf(playerTurn));
 	float forwardy = roundf(playerPosition.y + cosf(playerTurn));
 	int forward = mapPixels[(int)(forwardy)*cubicmap.width + (int)(forwardx)].r;
 
 	if (forward == 0) {
 		inputDirection.x = 1;
-		return;
-	}
-
-	float leftx = roundf(playerPosition.x + sinf(playerTurn + PI * 0.5f));
-	float lefty = roundf(playerPosition.y + cosf(playerTurn + PI * 0.5f));
-	int left = mapPixels[(int)(lefty)*cubicmap.width + (int)(leftx)].r;
-	if (left == 0) {
-		inputDirection.y = 1;
 		return;
 	}
 
