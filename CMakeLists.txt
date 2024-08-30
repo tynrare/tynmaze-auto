@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.12) # FetchContent is available in 3.11+
-project(tynmaze-fps)
+project(tynmaze-auto)
 
 # Generate compile_commands.json
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)

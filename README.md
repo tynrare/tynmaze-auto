@@ -1,8 +1,8 @@
 # tynmaze-fps
 
 
-[forked from tynmaze](https://github.com/tynrare/tynmaze)
-[web](https://tynmaze-fps.netlify.app/)
+[forked from tynmaze-fps](https://github.com/tynrare/tynmaze-auto)
+[web](https://tynmaze-auto.netlify.app/)
 
 # build
 

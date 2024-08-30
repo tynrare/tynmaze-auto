@@ -19,6 +19,13 @@
 // --- gameplay includes
 #include "weapon.h"
 
+// ---
+
+void toggle_fullscreen();
+bool is_toggle_fullscreen_requested();
+
+// ---
+
 bool active = false;
 
 TouchPoint touch_points[MAX_TOUCH_POINTS] = {0};
@@ -285,6 +292,10 @@ static void inputs_sui_buttons() {
 }
 
 static void inputs() {
+  if (is_toggle_fullscreen_requested()) {
+    toggle_fullscreen();
+  }
+
   int tCount = GetTouchPointCount();
   for (int i = 0; i < MAX_TOUCH_POINTS; ++i) {
     bool active = i < tCount;
@@ -528,4 +539,27 @@ int main(void) {
   CloseWindow();
 
   return 0;
+}
+
+bool is_toggle_fullscreen_requested() {
+  return IsKeyPressed(KEY_ENTER) &&
+         (IsKeyDown(KEY_LEFT_ALT) || IsKeyDown(KEY_RIGHT_ALT));
+}
+
+void toggle_fullscreen() {
+  // see what display we are on right now
+  int display = GetCurrentMonitor();
+
+  if (IsWindowFullscreen()) {
+
+    // if we are full screen, then go back to the windowed size
+    SetWindowSize(viewport_w, viewport_h);
+  } else {
+    // if we are not full screen, set the window size to match the monitor we
+    // are on
+    SetWindowSize(GetMonitorWidth(display), GetMonitorHeight(display));
+  }
+
+  // toggle the state
+  ToggleFullscreen();
 }
