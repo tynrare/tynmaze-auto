@@ -136,6 +136,7 @@ static ACTION action_a = ACTION_NONE;
 static ACTION action_b = ACTION_NONE;
 
 static float walker_dt = 0;
+static Vector2 walker_last_input = { 0 };
 static void walker() {
 	walker_dt += GetFrameTime();
 	if (walker_dt < 0.3) {
@@ -144,33 +145,48 @@ static void walker() {
 
 	walker_dt = 0;
 
-	float leftx = roundf(playerPosition.x + sinf(playerTurn + PI * 0.5f));
-	float lefty = roundf(playerPosition.y + cosf(playerTurn + PI * 0.5f));
-	int left = mapPixels[(int)(lefty)*cubicmap.width + (int)(leftx)].r;
-	if (left == 0) {
-		inputDirection.y = 1;
-		return;
-	}
-
 	float forwardx = roundf(playerPosition.x + sinf(playerTurn));
 	float forwardy = roundf(playerPosition.y + cosf(playerTurn));
 	int forward = mapPixels[(int)(forwardy)*cubicmap.width + (int)(forwardx)].r;
-
-	if (forward == 0) {
-		inputDirection.x = 1;
-		return;
-	}
-
+	float backwardx = roundf(playerPosition.x - sinf(playerTurn));
+	float backwardy = roundf(playerPosition.y - cosf(playerTurn));
+	int backward = mapPixels[(int)(backwardy)*cubicmap.width + (int)(backwardx)].r;
+	float leftx = roundf(playerPosition.x + sinf(playerTurn + PI * 0.5f));
+	float lefty = roundf(playerPosition.y + cosf(playerTurn + PI * 0.5f));
+	int left = mapPixels[(int)(lefty)*cubicmap.width + (int)(leftx)].r;
 	float rightx = roundf(playerPosition.x + sinf(playerTurn - PI * 0.5f));
 	float righty = roundf(playerPosition.y + cosf(playerTurn - PI * 0.5f));
 	int right = mapPixels[(int)(righty)*cubicmap.width + (int)(rightx)].r;
-	if (right == 0) {
-		inputDirection.y = -1;
-		return;
+
+	int paths = 
+		(forward == 0 ? 1 : 0) + 
+		(backward == 0 ? 1 : 0) + 
+		(left == 0 ? 1 : 0) + 
+		(right == 0 ? 1 : 0);
+
+	int turn = 1;
+	if (left == 0 && right == 0) {
+		turn = GetRandomValue(0, 1) * 2 - 1;
+	} else if (left == 0) {
+		turn = 1;
+	} else if (right == 0) {
+		turn = -1;
 	}
 
-	// dead end
-	inputDirection.y = 1;
+	if (forward != 0) {
+		inputDirection.y = turn; // turn left
+	} else if (forward == 0 && paths <= 2) {
+		inputDirection.x = 1; // go forward
+	} else if (forward == 0 && paths > 2 && walker_last_input.y != 0) {
+		inputDirection.x = 1; // go forward
+	} else if (GetRandomValue(0, 1) == 0) {
+		inputDirection.x = 1; // go forward
+	} else {
+		inputDirection.y = turn; // turn left
+	}
+
+	walker_last_input.x = inputDirection.x;
+	walker_last_input.y = inputDirection.y;
 }
 
 static void update() {
