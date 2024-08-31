@@ -16,7 +16,7 @@ var Module = typeof Module != 'undefined' ? Module : {};
 
 // --pre-jses are emitted after the Module integration code, so that they can
 // refer to Module (if they choose; they can also define Module)
-// include: /tmp/tmpbos_52qk.js
+// include: /tmp/tmprqxir4kg.js
 
   if (!Module.expectedDataFileDownloads) {
     Module.expectedDataFileDownloads = 0;
@@ -193,11 +193,11 @@ Module['FS_createPath']("/res", "pic", true, true);
     }
 
     }
-    loadPackage({"files": [{"filename": "/res/atlas_maze.png", "start": 0, "end": 5295}, {"filename": "/res/coin.wav", "start": 5295, "end": 37084, "audio": 1}, {"filename": "/res/cutto.png", "start": 37084, "end": 39691}, {"filename": "/res/dd.png", "start": 39691, "end": 48716}, {"filename": "/res/lighting.fs", "start": 48716, "end": 50637}, {"filename": "/res/lighting.vs", "start": 50637, "end": 52215}, {"filename": "/res/maze-0.png", "start": 52215, "end": 54194}, {"filename": "/res/maze.fs", "start": 54194, "end": 56100}, {"filename": "/res/maze.vs", "start": 56100, "end": 58122}, {"filename": "/res/minijump.wav", "start": 58122, "end": 79312, "audio": 1}, {"filename": "/res/models/gun.glb", "start": 79312, "end": 110828}, {"filename": "/res/models/sword.glb", "start": 110828, "end": 123496}, {"filename": "/res/pic/forwards.png", "start": 123496, "end": 143487}, {"filename": "/res/pic/punch-blast.png", "start": 143487, "end": 173172}, {"filename": "/res/pic/rotate.png", "start": 173172, "end": 201814}, {"filename": "/res/pic/rotate_left.png", "start": 201814, "end": 219183}, {"filename": "/res/pic/rotate_right.png", "start": 219183, "end": 236461}, {"filename": "/res/sound.wav", "start": 236461, "end": 284147, "audio": 1}, {"filename": "/res/tex0.png", "start": 284147, "end": 326213}, {"filename": "/res/tex1.png", "start": 326213, "end": 327168}, {"filename": "/res/tex_noise0.png", "start": 327168, "end": 865358}], "remote_package_size": 865358});
+    loadPackage({"files": [{"filename": "/res/atlas_maze.png", "start": 0, "end": 5295}, {"filename": "/res/coin.wav", "start": 5295, "end": 37084, "audio": 1}, {"filename": "/res/cutto.png", "start": 37084, "end": 39691}, {"filename": "/res/dd.png", "start": 39691, "end": 48716}, {"filename": "/res/lighting.fs", "start": 48716, "end": 50637}, {"filename": "/res/lighting.vs", "start": 50637, "end": 52215}, {"filename": "/res/maze-0.png", "start": 52215, "end": 54194}, {"filename": "/res/maze.fs", "start": 54194, "end": 56135}, {"filename": "/res/maze.vs", "start": 56135, "end": 58157}, {"filename": "/res/minijump.wav", "start": 58157, "end": 79347, "audio": 1}, {"filename": "/res/models/gun.glb", "start": 79347, "end": 110863}, {"filename": "/res/models/sword.glb", "start": 110863, "end": 123531}, {"filename": "/res/pic/forwards.png", "start": 123531, "end": 143522}, {"filename": "/res/pic/punch-blast.png", "start": 143522, "end": 173207}, {"filename": "/res/pic/rotate.png", "start": 173207, "end": 201849}, {"filename": "/res/pic/rotate_left.png", "start": 201849, "end": 219218}, {"filename": "/res/pic/rotate_right.png", "start": 219218, "end": 236496}, {"filename": "/res/sound.wav", "start": 236496, "end": 284182, "audio": 1}, {"filename": "/res/tex0.png", "start": 284182, "end": 326248}, {"filename": "/res/tex1.png", "start": 326248, "end": 327203}, {"filename": "/res/tex_noise0.png", "start": 327203, "end": 865393}], "remote_package_size": 865393});
 
   })();
 
-// end include: /tmp/tmpbos_52qk.js
+// end include: /tmp/tmprqxir4kg.js
 
 
 // Sometimes an existing Module object exists with properties

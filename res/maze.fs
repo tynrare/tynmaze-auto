@@ -21,7 +21,7 @@ float rand(vec3 co) {
 
 void main()
 {
-    vec2 tiles = vec2(5.0, 3.0);
+    vec2 tiles = vec2(5.0, 3);
     vec2 rev_tiles = 1.0 / tiles;
 	
     bool top = fragNormal.y < 0.0;
@@ -36,6 +36,7 @@ void main()
     if (top) {
         uv.y -= rev_tiles.y; 
     } else if(bottom) {
+        uv.y -= rev_tiles.y; 
         uv.x -= rev_tiles.x; // discard to zero
     } else if(side_b || side_a) {
         if (side_b) {
@@ -58,7 +59,7 @@ void main()
     float gridscale = 1.0;
 		// 0.01 required for fixing glitching related with ceils hopping
 		// (kinda z-fight)
-    vec3 fp = vec3(fragPosition.x + 0.501, fragPosition.y, fragPosition.z + 0.501) * gridscale;
+    vec3 fp = vec3(fragPosition.x + 0.501, fragPosition.y + 0.01, fragPosition.z + 0.501) * gridscale;
     vec3 fp_ceil = ceil(fp) / gridscale;
 
     // completely random texture
