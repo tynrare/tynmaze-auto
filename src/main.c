@@ -187,6 +187,10 @@ static void walker() {
 
 	walker_last_input.x = inputDirection.x;
 	walker_last_input.y = inputDirection.y;
+
+	if (inputDirection.x != 0 && GetRandomValue(0, 1) == 0) {
+		action_b = ACTION_RUN;
+	}
 }
 
 static void update() {
