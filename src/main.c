@@ -19,6 +19,10 @@
 // --- gameplay includes
 #include "weapon.h"
 
+// --- gameplay defines
+
+#define WALKER_RUSHES 13
+
 // ---
 
 void toggle_fullscreen();
@@ -188,7 +192,7 @@ static void walker() {
 	walker_last_input.x = inputDirection.x;
 	walker_last_input.y = inputDirection.y;
 
-	if (inputDirection.x != 0 && GetRandomValue(0, 1) == 0) {
+	if (inputDirection.x != 0 && GetRandomValue(0, WALKER_RUSHES) == 0) {
 		action_b = ACTION_RUN;
 	}
 }
