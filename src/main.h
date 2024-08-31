@@ -1,6 +1,6 @@
 #include <raylib.h>
 
-#ifdef __DEBUG__
+#ifndef __DEBUG__
 #define RES_PATH "res/"
 #else
 #define RES_PATH "../res/"

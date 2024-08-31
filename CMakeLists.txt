@@ -25,10 +25,10 @@ endif()
 
 # Our Project
 
-set(IS_DEBUG_BUILD CMAKE_BUILD_TYPE STREQUAL "Debug")
+set(IS_RELEASE_BUILD CMAKE_BUILD_TYPE STREQUAL "Release")
 
 # Indication to the code that this is a debug build
-if (${IS_DEBUG_BUILD})
+if (NOT ${IS_RELEASE_BUILD})
     add_compile_definitions(__DEBUG__)
 endif ()
 

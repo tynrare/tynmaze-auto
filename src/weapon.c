@@ -1,6 +1,5 @@
 #include "weapon.h"
 #include "main.h"
-#include "root.h"
 #include "tynmath.h"
 #include <math.h>
 #include <raylib.h>
