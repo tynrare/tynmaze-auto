@@ -92,11 +92,11 @@
     
     <textarea class="emscripten db" id="output" rows="8"></textarea>
 
-		<script type='text/javascript'>
-			function main() {
-				window.dispatchEvent(new Event("resize")); // trigger fullscreen
-			}
-		</script>
+    <script type='text/javascript'>
+        function main() {
+            window.dispatchEvent(new Event("resize")); // trigger fullscreen
+        }
+    </script>
 
     <script type='text/javascript'>
       // Save user progress
@@ -109,6 +109,23 @@
           const n = Number(localStorage.getItem(key) ?? 0);
           return isNaN(n) ? 0 : n;
       }
+    </script>
+    <script>
+    window.onmessage = (e) => {
+        const payload = JSON.parse(e.data);
+        switch(payload.method) {
+          case 'get':
+              const parent = window.parent;
+              const value = localStorage.getItem(payload.key);
+              const returnPayload = {
+                method: 'storage#get',
+                value: value,
+                key: payload.key
+              }
+              parent.postMessage(JSON.stringify(returnPayload), '*');
+              break;
+        }
+    }
     </script>
     <script type='text/javascript'>
       var statusElement = document.getElementById('status');
