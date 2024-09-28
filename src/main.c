@@ -271,7 +271,7 @@ static void draw_map() {
 			0,
 			WHITE);
 
-	DrawCircle(pawn_x + halfscale + 1, pawn_y + halfscale + 1, halfscale, RED);
+	DrawRectangle(pawn_x + 1, pawn_y + 1, scale + 1, scale + 1, RED);
 	return;
 }
 
