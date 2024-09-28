@@ -22,6 +22,8 @@
 // --- gameplay defines
 
 #define WALKER_RUSHES 13
+#define DRAW_MODEL false
+#define DRAW_UI false
 
 // ---
 
@@ -81,7 +83,7 @@ bool _draw_help_enabled = false;
 
 Vector3 mapPosition = {-0.0f, 0.0f, -0.0f}; // Set model position
 Vector2 inputDirection = {0.0f, 0.0f};
-Vector2 playerPosition = {1.0f, 1.0f};
+Vector2 pawnPosition = {1.0f, 1.0f};
 float playerTurn = 0.0f;
 float cameraRot = 0.0f;
 int steps = 0;
@@ -91,9 +93,9 @@ Camera3D camera = {0};
 Shader shader_maze = {0};
 
 Color *mapPixels = NULL;
+Texture2D scene_texture = {0};
 Texture2D texture = {0};
 Texture2D tex_noise0 = {0};
-Texture2D cubicmap = {0};
 Model model = {0};
 
 // --- res
@@ -149,18 +151,18 @@ static void walker() {
 
 	walker_dt = 0;
 
-	float forwardx = roundf(playerPosition.x + sinf(playerTurn));
-	float forwardy = roundf(playerPosition.y + cosf(playerTurn));
-	int forward = mapPixels[(int)(forwardy)*cubicmap.width + (int)(forwardx)].r;
-	float backwardx = roundf(playerPosition.x - sinf(playerTurn));
-	float backwardy = roundf(playerPosition.y - cosf(playerTurn));
-	int backward = mapPixels[(int)(backwardy)*cubicmap.width + (int)(backwardx)].r;
-	float leftx = roundf(playerPosition.x + sinf(playerTurn + PI * 0.5f));
-	float lefty = roundf(playerPosition.y + cosf(playerTurn + PI * 0.5f));
-	int left = mapPixels[(int)(lefty)*cubicmap.width + (int)(leftx)].r;
-	float rightx = roundf(playerPosition.x + sinf(playerTurn - PI * 0.5f));
-	float righty = roundf(playerPosition.y + cosf(playerTurn - PI * 0.5f));
-	int right = mapPixels[(int)(righty)*cubicmap.width + (int)(rightx)].r;
+	float forwardx = roundf(pawnPosition.x + sinf(playerTurn));
+	float forwardy = roundf(pawnPosition.y + cosf(playerTurn));
+	int forward = mapPixels[(int)(forwardy)*scene_texture.width + (int)(forwardx)].r;
+	float backwardx = roundf(pawnPosition.x - sinf(playerTurn));
+	float backwardy = roundf(pawnPosition.y - cosf(playerTurn));
+	int backward = mapPixels[(int)(backwardy)*scene_texture.width + (int)(backwardx)].r;
+	float leftx = roundf(pawnPosition.x + sinf(playerTurn + PI * 0.5f));
+	float lefty = roundf(pawnPosition.y + cosf(playerTurn + PI * 0.5f));
+	int left = mapPixels[(int)(lefty)*scene_texture.width + (int)(leftx)].r;
+	float rightx = roundf(pawnPosition.x + sinf(playerTurn - PI * 0.5f));
+	float righty = roundf(pawnPosition.y + cosf(playerTurn - PI * 0.5f));
+	int right = mapPixels[(int)(righty)*scene_texture.width + (int)(rightx)].r;
 
 	int paths = 
 		(forward == 0 ? 1 : 0) + 
@@ -210,17 +212,17 @@ static void update() {
   // move
   int collider = 0;
   while (!collider && inputDirection.x) {
-    float newx = roundf(playerPosition.x + sinf(playerTurn) * inputDirection.x);
-    float newy = roundf(playerPosition.y + cosf(playerTurn) * inputDirection.x);
-    collider = mapPixels[(int)(newy)*cubicmap.width + (int)(newx)].r;
+    float newx = roundf(pawnPosition.x + sinf(playerTurn) * inputDirection.x);
+    float newy = roundf(pawnPosition.y + cosf(playerTurn) * inputDirection.x);
+    collider = mapPixels[(int)(newy)*scene_texture.width + (int)(newx)].r;
     /*
     if(inputDirection.x != 0.0f) {
             printf("newx: %f, newy: %f, turn: %f \n", newx, newy, playerTurn);
     }
     */
     if (collider == 0) {
-      playerPosition.x = newx;
-      playerPosition.y = newy;
+      pawnPosition.x = newx;
+      pawnPosition.y = newy;
     }
     if (action_b != ACTION_RUN) {
       break;
@@ -229,16 +231,16 @@ static void update() {
 
   cameraRot = rlerp(cameraRot, playerTurn, 0.5);
 
-  camera.position.x = lerp(camera.position.x, playerPosition.x, 0.5);
-  camera.position.z = lerp(camera.position.z, playerPosition.y, 0.5);
+  camera.position.x = lerp(camera.position.x, pawnPosition.x, 0.5);
+  camera.position.z = lerp(camera.position.z, pawnPosition.y, 0.5);
   camera.target.x = camera.position.x + sinf(cameraRot);
   camera.target.y = camera.position.y;
   camera.target.z = camera.position.z + cosf(cameraRot);
 
   SaveProgress("steps", steps);
   SaveProgress("hash", SAVES_HASH);
-  SaveProgress("px", playerPosition.x);
-  SaveProgress("py", playerPosition.y);
+  SaveProgress("px", pawnPosition.x);
+  SaveProgress("py", pawnPosition.y);
   SaveProgress("turn", playerTurn * 1e4);
 
   if (action_b == ACTION_SWAP) {
@@ -250,6 +252,29 @@ static void update() {
   update_weapon();
 }
 
+static void draw_map() {
+	const int dim = viewport_w <= viewport_h ? viewport_w : viewport_h;
+	const int dim_tex = scene_texture.width <= scene_texture.height ? scene_texture.width : scene_texture.height;
+	const int detx = (viewport_w - dim) * 0.5;
+	const int dety = (viewport_h - dim) * 0.5;
+
+	const float scale = (float)dim / dim_tex;
+	const float halfscale = scale * 0.5;
+	const float pawn_x = detx + pawnPosition.x * scale;
+	const float pawn_y = dety + pawnPosition.y * scale;
+
+// void DrawTexturePro( Texture2D texture, Rectangle source, Rectangle dest, Vector2 origin, float rotation, Color tint )
+	DrawTexturePro(scene_texture, 
+			(Rectangle){ 0, 0, scene_texture.width, scene_texture.height },
+			(Rectangle){ detx, dety, viewport_w - detx * 2, viewport_h - dety  * 2},
+			(Vector2){ 0, 0 },
+			0,
+			WHITE);
+
+	DrawCircle(pawn_x + halfscale + 1, pawn_y + halfscale + 1, halfscale, RED);
+	return;
+}
+
 #define SUI_BTN_A                                                              \
   (Rectangle) { 16, viewport_h - 16 - 64, 64, 64 }
 #define SUI_BTN_B                                                              \
@@ -258,7 +283,6 @@ static void update() {
   (Rectangle) { viewport_w - 16 - 64, viewport_h - 16 - 64, 64, 64 }
 
 static void draw_inputs() {
-	return;
   Rectangle sba = SUI_BTN_A;
   Rectangle sbb = SUI_BTN_B;
   Rectangle sbc = SUI_BTN_C;
@@ -298,15 +322,21 @@ static void draw_inputs() {
 static void draw() {
   ClearBackground(BLACK);
 
+#if DRAW_MODEL
   BeginMode3D(camera);
   DrawModel(model, mapPosition, 1.0f, WHITE); // Draw maze map
   EndMode3D();
-  draw_weapon();
+#endif
+
+	draw_map();
 
   DrawText(TextFormat("Steps: %i", steps), 16 + 2, 16 + 2, 20, BLACK);
   DrawText(TextFormat("Steps: %i", steps), 16, 16, 20, WHITE);
-
+#if DRAW_UI
   draw_inputs();
+#endif
+
+  draw_weapon();
 }
 
 static void inputs_sui_buttons() {
@@ -463,7 +493,7 @@ static void dispose() {
   UnloadTexture(pic_rotate_right);
   UnloadImageColors(mapPixels); // Unload color array
 
-  UnloadTexture(cubicmap); // Unload cubicmap texture
+  UnloadTexture(scene_texture); // Unload scene_texture texture
   UnloadTexture(texture);  // Unload map texture
   UnloadModel(model);      // Unload map model
   CloseAudioDevice();
@@ -475,10 +505,10 @@ static void init() {
   int saves_hash = LoadProgress("hash");
   if (saves_hash == SAVES_HASH) {
     steps = LoadProgress("steps");
-    playerPosition.x = LoadProgress("px");
-    playerPosition.y = LoadProgress("py");
-    playerPosition.x = playerPosition.x ? playerPosition.x : 1;
-    playerPosition.y = playerPosition.y ? playerPosition.y : 1;
+    pawnPosition.x = LoadProgress("px");
+    pawnPosition.y = LoadProgress("py");
+    pawnPosition.x = pawnPosition.x ? pawnPosition.x : 1;
+    pawnPosition.y = pawnPosition.y ? pawnPosition.y : 1;
     playerTurn = LoadProgress("turn") / 1e4;
 
 		// Align angle
@@ -506,7 +536,7 @@ static void init() {
   camera.projection = CAMERA_PERSPECTIVE;
 
   Image imMap = LoadImage(RES_PATH "maze-0.png"); // Load cubicmap image (RAM)
-  cubicmap =
+  scene_texture =
       LoadTextureFromImage(imMap); // Convert image to texture to display (VRAM)
   Mesh mesh = GenMeshCubicmap(imMap, (Vector3){1.0f, 1.0f, 1.0f});
   model = LoadModelFromMesh(mesh);
