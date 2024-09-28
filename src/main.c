@@ -259,7 +259,6 @@ static void draw_map() {
 	const int dety = (viewport_h - dim) * 0.5;
 
 	const float scale = (float)dim / dim_tex;
-	const float halfscale = scale * 0.5;
 	const float pawn_x = detx + pawnPosition.x * scale;
 	const float pawn_y = dety + pawnPosition.y * scale;
 
