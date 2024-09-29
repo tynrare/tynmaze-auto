@@ -93,7 +93,9 @@ Camera3D camera = {0};
 Shader shader_maze = {0};
 
 Color *mapPixels = NULL;
+Color *map_walker_pixels = NULL;
 Texture2D scene_texture = {0};
+RenderTexture scene_render_texture = { 0 };
 Texture2D texture = {0};
 Texture2D tex_noise0 = {0};
 Model model = {0};
@@ -153,16 +155,16 @@ static void walker() {
 
 	float forwardx = roundf(pawnPosition.x + sinf(playerTurn));
 	float forwardy = roundf(pawnPosition.y + cosf(playerTurn));
-	int forward = mapPixels[(int)(forwardy)*scene_texture.width + (int)(forwardx)].r;
+	int forward = map_walker_pixels[(int)(forwardy)*scene_texture.width + (int)(forwardx)].r;
 	float backwardx = roundf(pawnPosition.x - sinf(playerTurn));
 	float backwardy = roundf(pawnPosition.y - cosf(playerTurn));
-	int backward = mapPixels[(int)(backwardy)*scene_texture.width + (int)(backwardx)].r;
+	int backward = map_walker_pixels[(int)(backwardy)*scene_texture.width + (int)(backwardx)].r;
 	float leftx = roundf(pawnPosition.x + sinf(playerTurn + PI * 0.5f));
 	float lefty = roundf(pawnPosition.y + cosf(playerTurn + PI * 0.5f));
-	int left = mapPixels[(int)(lefty)*scene_texture.width + (int)(leftx)].r;
+	int left = map_walker_pixels[(int)(lefty)*scene_texture.width + (int)(leftx)].r;
 	float rightx = roundf(pawnPosition.x + sinf(playerTurn - PI * 0.5f));
 	float righty = roundf(pawnPosition.y + cosf(playerTurn - PI * 0.5f));
-	int right = mapPixels[(int)(righty)*scene_texture.width + (int)(rightx)].r;
+	int right = map_walker_pixels[(int)(righty)*scene_texture.width + (int)(rightx)].r;
 
 	int paths = 
 		(forward == 0 ? 1 : 0) + 
@@ -171,28 +173,33 @@ static void walker() {
 		(right == 0 ? 1 : 0);
 
 	int turn = 1;
-	if (left == 0 && right == 0) {
-		turn = GetRandomValue(0, 1) * 2 - 1;
-	} else if (left == 0) {
+	if (left < 1 && right < 1) {
+		turn = left > right ? 1 : -1;
+		if (left == right) {
+			turn = GetRandomValue(0, 1) * 2 - 1;
+		}
+	} else if (left < 1) {
 		turn = 1;
-	} else if (right == 0) {
+	} else if (right < 1) {
 		turn = -1;
 	}
 
-	if (forward != 0) {
+	if (forward > 0) {
 		inputDirection.y = turn; // turn left
-	} else if (forward == 0 && paths <= 2) {
+	} else if (forward < 1 && paths <= 2) {
 		inputDirection.x = 1; // go forward
-	} else if (forward == 0 && paths > 2 && walker_last_input.y != 0) {
+	} else if (forward < 1 && paths > 2 && walker_last_input.y != 0) {
 		inputDirection.x = 1; // go forward
-	} else if (GetRandomValue(0, 1) == 0) {
+	} else if (forward < left && forward < right) {
 		inputDirection.x = 1; // go forward
 	} else {
-		inputDirection.y = turn; // turn left
+		inputDirection.y = turn; // 
 	}
 
 	walker_last_input.x = inputDirection.x;
 	walker_last_input.y = inputDirection.y;
+
+	map_walker_pixels[(int)(pawnPosition.y)*scene_texture.width + (int)(pawnPosition.x)].r += 0.01;
 
 	if (inputDirection.x != 0 && GetRandomValue(0, WALKER_RUSHES) == 0) {
 		action_b = ACTION_RUN;
@@ -220,7 +227,7 @@ static void update() {
             printf("newx: %f, newy: %f, turn: %f \n", newx, newy, playerTurn);
     }
     */
-    if (collider == 0) {
+    if (collider < 1) {
       pawnPosition.x = newx;
       pawnPosition.y = newy;
     }
@@ -263,14 +270,26 @@ static void draw_map() {
 	const float pawn_y = dety + pawnPosition.y * scale;
 
 // void DrawTexturePro( Texture2D texture, Rectangle source, Rectangle dest, Vector2 origin, float rotation, Color tint )
-	DrawTexturePro(scene_texture, 
-			(Rectangle){ 0, 0, scene_texture.width, scene_texture.height },
+//
+	Rectangle tex_rec = { 0, 0, scene_texture.width, scene_texture.height };
+
+	BeginTextureMode(scene_render_texture);
+		DrawTexturePro(scene_texture, 
+				tex_rec,
+				tex_rec,
+				(Vector2){ 0, 0 },
+				0,
+				WHITE);
+
+		DrawRectangle(pawnPosition.x, pawnPosition.y, 1, 1, RED);
+	EndTextureMode();
+
+	DrawTexturePro(scene_render_texture.texture, 
+			tex_rec,
 			(Rectangle){ detx, dety, viewport_w - detx * 2, viewport_h - dety  * 2},
 			(Vector2){ 0, 0 },
 			0,
 			WHITE);
-
-	DrawRectangle(pawn_x + 1, pawn_y + 1, scale + 1, scale + 1, RED);
 	return;
 }
 
@@ -491,8 +510,10 @@ static void dispose() {
   UnloadTexture(pic_rotate_left);
   UnloadTexture(pic_rotate_right);
   UnloadImageColors(mapPixels); // Unload color array
+  UnloadImageColors(map_walker_pixels); // Unload color array
 
   UnloadTexture(scene_texture); // Unload scene_texture texture
+	UnloadRenderTexture(scene_render_texture);
   UnloadTexture(texture);  // Unload map texture
   UnloadModel(model);      // Unload map model
   CloseAudioDevice();
@@ -539,6 +560,7 @@ static void init() {
       LoadTextureFromImage(imMap); // Convert image to texture to display (VRAM)
   Mesh mesh = GenMeshCubicmap(imMap, (Vector3){1.0f, 1.0f, 1.0f});
   model = LoadModelFromMesh(mesh);
+	scene_render_texture = LoadRenderTexture( scene_texture.width, scene_texture.height );
 
   // NOTE: By default each cube is mapped to one part of texture atlas
   texture = LoadTexture(RES_PATH "atlas_maze.png"); // Load map texture
@@ -559,6 +581,7 @@ static void init() {
 
   // Get map image data to be used for collision detection
   mapPixels = LoadImageColors(imMap);
+  map_walker_pixels = LoadImageColors(imMap);
   UnloadImage(imMap); // Unload image from RAM
 
   // --- load
